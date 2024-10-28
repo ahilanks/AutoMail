@@ -2,7 +2,7 @@ import pandas as pd
 import fitz
 import google.generativeai as genai
 
-genai.configure(api_key="AIzaSyDSLGbQh5NR-MBLVCIyezAeRYrNRfsBZbA")
+genai.configure(api_key="YOUR-API-KEY")
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 people = pd.read_csv('/Users/ahilankaruppusami/Downloads/Mail Merge Test 2 - Sheet1 (2).csv')
