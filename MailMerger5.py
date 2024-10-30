@@ -5,8 +5,8 @@ import requests
 from typing import Tuple
 
 # Replace with YOUR API Configuration
-ANTHROPIC_API_KEY = "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"
-HUNTER_API_KEY = "5449b736ce1b907212212856e16365e33fff5699"
+ANTHROPIC_API_KEY = ""
+HUNTER_API_KEY = ""
 HUNTER_API_URL = "https://api.hunter.io/v2/email-finder"
 
 # Initialize Anthropic client
