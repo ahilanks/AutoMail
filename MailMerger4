@@ -6,7 +6,7 @@ import requests
 
 client = anthropic.Anthropic(
     # Replace with your API-KEY
-    api_key="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",
+    api_key="",
 )
 
 # Replace with your file path for list of people and your resume/details of organization
