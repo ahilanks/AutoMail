@@ -2,13 +2,15 @@ import pandas as pd
 import fitz
 import google.generativeai as genai
 import anthropic
+import requests
 
 client = anthropic.Anthropic(
-    # defaults to os.environ.get("ANTHROPIC_API_KEY")
-    api_key="",
+    # Replace with your API-KEY
+    api_key="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",
 )
 
-people = pd.read_csv('/Users/ahilankaruppusami/Downloads/Mail Merge Test 2 - Sheet1 (2).csv')
+# Replace with your file path for list of people and your resume/details of organization
+people = pd.read_csv('/Users/ahilankaruppusami/Downloads/Mail Merge Test - Sheet1.csv')
 resume_path = "/Users/ahilankaruppusami/Downloads/Karuppusami_Ahilan--Resume.pdf"
 
 # Extract resume_text from all pages
@@ -25,16 +27,45 @@ def split_name(name):
 def findEmail(people):
     # Split 'Name' into 'FirstName' and 'LastName'
     people[['FirstName', 'LastName']] = people['Name'].apply(split_name)
-    
-    # Generate emails (replace with your actual email generation logic)
-    emails = []
-    for i, row in people.iterrows():
-        email = f"{row['FirstName']}.{row['LastName']}@{row['Company'].replace(' ', '').lower()}.com"
-        emails.append(email)
-    
-    people['Emails'] = emails
 
-def writeEmail(df):
+    # Initialize a list to store emails
+    emails = []
+    confidences = []
+    # Iterate through the DataFrame rows
+    url = "https://api.hunter.io/v2/email-finder"
+    for i, row in people.iterrows():
+        # Call the Hunter API to find the email
+        
+        params = {
+            "domain": row['Company'].replace(" ", "").lower() + ".com",
+            "first_name": row['FirstName'],
+            "last_name": row['LastName'],
+            "api_key": "5449b736ce1b907212212856e16365e33fff5699"
+        }
+        response = requests.get(url, params=params)
+
+        # If the request is successful, extract the email; else generate a fallback email
+        if response.status_code == 200 and response.json().get("data"):
+            print("Got Right Email!")
+            email = response.json()["data"].get("email", None)
+            confidence = response.json()["data"].get("score", None)
+        else:
+            # Fallback email generation if API fails
+            print(f"Could not get Email because {response.status_code}!")
+            email = f"{row['FirstName']}.{row['LastName']}@{row['Company'].replace(' ', '').lower()}.com"
+            confidence = 0
+
+        emails.append(email)
+        confidences.append(confidence)
+
+    # Add the emails to the DataFrame
+    people['Emails'] = emails
+    people["Email Confidence"] = confidences
+
+    people.drop("FirstName", axis = 1)
+    people.drop("LastName", axis = 1)
+
+def writeEmail(df): 
     emails = []
     for _, person in df.iterrows():
         prompt = f"""
@@ -62,10 +93,11 @@ def writeEmail(df):
                 {"role": "user", "content": f"{prompt}"}
             ]
         )
-        emails.append(response.content)
+        emails.append(response.content[0].text)
+
     df['Email Content'] = emails
 
 findEmail(people)
-writeEmail(people)
+#writeEmail(people)
 
 people.to_excel("/Users/ahilankaruppusami/Coding_Projects/Mail Merging/Spreadsheets/my_data.xlsx", index=False)
