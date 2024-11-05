@@ -1,6 +1,4 @@
-AUTO MAIL
-
-Mail Merging is pretty useful. But despite the ease of mail merging, it can be made better.
+####### Mail Merging is pretty useful. It can be made better.
 
 Auto Mail streamlines the mail merging process. Open spreadsheets and add the full names of the people you want to reach out to in one column and the companies they work at in another. Click on the Auto Mail Google extension and add your resume or information about your organization and it does the rest. 
 
